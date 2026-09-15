@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- CONVENTIONS.md "Project reference graph": Contracts references nothing — never Domain, never BuildingBlocks. This
+       is Identity's entire public wire surface: the commands it accepts and the events it
+       publishes (ARCHITECTURE.md "Contracts: each service owns and publishes its own"). -->
+
+  <!-- GL-25: this project is the package. Packed to the local folder feed and consumed by
+       every other repo that sends Identity a command or subscribes to its events
+       (ARCHITECTURE.md "Contracts: each service owns and publishes its own"). PackageId is the
+       assembly name character for character, deliberately: ARCHITECTURE.md "What 'breaking'
+       means for a message contract" makes the type name and namespace part of the wire format,
+       because Rebus routes and deserializes on the .NET type name.
+
+       Version 0.1.0 is the split's starting point; GL-27 owns the bump discipline from here.
+       Do not repack a version that is already in the feed — NuGet caches by (id, version), so
+       consumers would silently keep the old contract. GL-28's pack-all guard is what turns that
+       into a build error.
+
+       nuget.org already serves an unrelated Identity.Contracts (1.0.14 today). Nothing stops a
+       consumer configured with both nuget.org and the folder feed from satisfying an exact
+       version from either, so GL-26's nuget.config needs packageSourceMapping, not just an extra
+       <add key> — see this repo's README. -->
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>Identity.Contracts</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>goodsell-engineering</Authors>
+    <Description>Identity's entire public wire surface: the commands it accepts (SignUp, Login) and the events it publishes (UserRegisteredV1).</Description>
+  </PropertyGroup>
+
+</Project>
