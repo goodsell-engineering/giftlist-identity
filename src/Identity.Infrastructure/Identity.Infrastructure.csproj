@@ -23,6 +23,6 @@
     <!-- CONVENTIONS.md "Project reference graph": Infrastructure may reference BuildingBlocks directly too — needed here
          for BuildingBlocks.Results.Result<T>, which the Rebus handlers pattern-match on when
          translating an interactor's outcome into a wire reply. -->
-    <PackageReference Include="BuildingBlocks" Version="0.1.0" />
+    <PackageReference Include="BuildingBlocks" Version="[0.1.0]" />
   </ItemGroup>
 </Project>
