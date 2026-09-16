@@ -25,6 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Identity.Host\Identity.Host.csproj" />
     <!-- GL-75: shared QueueCleanup, rather than the fourth copy of it. -->
-    <PackageReference Include="BuildingBlocks.Testing" Version="0.1.0" />
+    <PackageReference Include="BuildingBlocks.Testing" Version="[0.1.0]" />
   </ItemGroup>
 </Project>
