@@ -37,6 +37,21 @@ public sealed class EmailTests
     }
 
     [Fact]
+    public void Constructor_ShouldThrowArgumentException_WhenValueExceedsMaxLength()
+    {
+        // Arrange — GL-44: the regex alone has no length bound; a well-shaped but absurdly long
+        // value must still be rejected, not written unbounded into storage and the unique index.
+        var tooLong = $"{new string('a', Email.MaxLength)}@example.com";
+
+        // Act
+        var exception = Record.Exception(() => new Email(tooLong));
+
+        // Assert
+        var argumentException = Assert.IsType<ArgumentException>(exception);
+        Assert.Equal("value", argumentException.ParamName);
+    }
+
+    [Fact]
     public void Constructor_ShouldNormalizeToLowercaseAndTrimmed_SoTheUniqueIndexCatchesCaseVariants()
     {
         // Arrange
@@ -75,6 +90,20 @@ public sealed class EmailTests
         // Assert
         Assert.False(validNull);
         Assert.False(validEmpty);
+    }
+
+    [Fact]
+    public void IsValidFormat_ShouldReturnFalse_WhenValueExceedsMaxLength()
+    {
+        // Arrange — mirrors the constructor's own rejection (GL-44), so SignUpValidator/LoginValidator
+        // reject this as a Result before it ever reaches the constructor.
+        var tooLong = $"{new string('a', Email.MaxLength)}@example.com";
+
+        // Act
+        var valid = Email.IsValidFormat(tooLong);
+
+        // Assert
+        Assert.False(valid);
     }
 
     [Fact]
