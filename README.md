@@ -81,6 +81,23 @@ any of the seven: they govern all of them, a home inside one is invisible to the
 seven copies is exactly the drift they warn about. Comments here cite them by document and
 heading text, never by section number (CONVENTIONS.md "Citing the rules").
 
+## Security pass conclusions (GL-44)
+
+**Validation audit.** `SignUpValidator`/`LoginValidator` already rejected a malformed email
+(`Email.IsValidFormat`) and an over-long display name (`DisplayName.IsValidLength`) before this
+pass — the one gap found was that `Email`'s regex (`^[^@\s]+@[^@\s]+\.[^@\s]+$`) has no length of
+its own, so a well-shaped-but-arbitrarily-long value was an unbounded write into the `identity`
+database's unique email index, the same class of gap GL-74 closed in `giftlist-giftlists` for
+`GiftItemUrl`/`GiftItemDescription`. Fixed: `Email.MaxLength = 254` (RFC 5321's own limit on a
+complete address, not a number picked for this demo), enforced in both the constructor and
+`IsValidFormat`, so `SignUpValidator`/`LoginValidator` reject an over-long email as the existing
+`identity.email_invalid` `Result` — no new error code, no contract change. `DisplayName` already
+had a length bound (100); nothing else in this service's public request shapes carries free text
+(`Password` is bounded below by `SignUpValidator`'s minimum-length check, not above — an
+intentional asymmetry: a long passphrase is a feature, not a vector, since it is hashed rather
+than stored or displayed). Tested per field: `EmailTests` gained the rejection-path cases (both
+the throwing constructor and the non-throwing `IsValidFormat` predicate).
+
 ## What does not work yet, and whose job it is
 
 The local folder feed, this repo's `nuget.config` (GL-26) and the compose mounts that make the
